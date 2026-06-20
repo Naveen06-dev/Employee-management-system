@@ -1,0 +1,85 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: employee-management-system
+
+  # Database configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ems
+    username: ems
+    password: ems
+    driver-class-name: org.postgresql.Driver
+
+  # JPA & Hibernate configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate # Database schema managed strictly by Flyway
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        open-in-view: false
+
+  # Flyway configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  # Redis Caching configuration
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      time-to-live: 600000 # Default TTL 10 minutes in ms
+
+  # Email Configuration (Mailhog)
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+# Spring Boot Actuator & Monitoring configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# Custom Application settings (JWT Security, file uploads)
+app:
+  jwt:
+    # 256-bit base64-encoded secret key: "superSecretKeyForEmployeeManagementSystemPortFolioProject2026!!!"
+    secret: dXVwZXJTZWNyZXRLZXlGb3JFbXBsb3llZU1hbmFnZW1lbnRTeXN0ZW1Qb3J0Rm9saW9Qcm9qZWN0MjAyNiEhIQ==
+    expiration-ms: 900000      # 15 minutes
+    refresh-expiration-ms: 604800000 # 7 days
+  upload:
+    dir: uploads/resumes
+
+# Logging configurations
+logging:
+  level:
+    root: INFO
+    com.ems: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: ERROR

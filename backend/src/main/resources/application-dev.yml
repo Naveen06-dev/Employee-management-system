@@ -1,0 +1,38 @@
+spring:
+  # In-memory H2 Database for developer ease
+  datasource:
+    url: jdbc:h2:mem:emsdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+
+  # H2 Console configuration for viewing db data
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+  # Hibernate configuration for development
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update # Automatically generate tables from entity definitions in dev mode
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Disable Flyway in dev to allow Hibernate auto-generation
+  flyway:
+    enabled: false
+
+  # In-memory simple cache instead of Redis
+  cache:
+    type: simple
+
+  # Mock Mail Sender
+  mail:
+    host: localhost
+    port: 1025
