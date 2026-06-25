@@ -5,8 +5,10 @@ import com.ems.modules.auth.model.RoleName;
 import com.ems.modules.auth.model.User;
 import com.ems.modules.auth.repository.RoleRepository;
 import com.ems.modules.auth.repository.UserRepository;
+import com.ems.modules.employee.model.Department;
 import com.ems.modules.employee.model.Employee;
 import com.ems.modules.employee.model.EmployeeStatus;
+import com.ems.modules.employee.repository.DepartmentRepository;
 import com.ems.modules.employee.repository.EmployeeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -24,15 +26,18 @@ public class DataInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(RoleRepository roleRepository,
                            UserRepository userRepository,
                            EmployeeRepository employeeRepository,
+                           DepartmentRepository departmentRepository,
                            PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -50,10 +55,32 @@ public class DataInitializer implements CommandLineRunner {
         }
         log.info("Role data initialization completed.");
 
+        log.info("Checking and initializing department data...");
+        seedDepartment("Developer - UI/UX", "DEV_UIUX");
+        seedDepartment("Developer - Frontend", "DEV_FRONTEND");
+        seedDepartment("Developer - Backend", "DEV_BACKEND");
+        seedDepartment("Developer - Database", "DEV_DB");
+        seedDepartment("Data Analytics", "DATA_ANALYTICS");
+        seedDepartment("Data Engineer", "DATA_ENGINEER");
+        seedDepartment("Tester", "TESTER");
+        seedDepartment("Intern", "INTERN");
+        log.info("Department data initialization completed.");
+
         // Seed default users for easier development
         seedUser("admin", "admin@ems.com", "password123", RoleName.ROLE_ADMIN, "Admin", "User", "Administrator");
         seedUser("hr", "hr@ems.com", "password123", RoleName.ROLE_HR, "HR", "Manager", "HR Specialist");
         seedUser("employee", "employee@ems.com", "password123", RoleName.ROLE_EMPLOYEE, "Jane", "Doe", "Software Engineer");
+    }
+
+    private void seedDepartment(String name, String code) {
+        if (!departmentRepository.existsByCode(code)) {
+            Department department = Department.builder()
+                    .name(name)
+                    .code(code)
+                    .build();
+            departmentRepository.save(department);
+            log.info("Seeded department: {} ({})", name, code);
+        }
     }
 
     private void seedUser(String username, String email, String password, RoleName roleName, String firstName, String lastName, String jobTitle) {
@@ -72,6 +99,11 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(user);
             log.info("Seeded default user: {}", username);
 
+            Department dept = null;
+            if (roleName == RoleName.ROLE_EMPLOYEE) {
+                dept = departmentRepository.findByCode("DEV_BACKEND").orElse(null);
+            }
+
             // Also seed default employee profile
             Employee employee = Employee.builder()
                     .user(user)
@@ -79,6 +111,7 @@ public class DataInitializer implements CommandLineRunner {
                     .firstName(firstName)
                     .lastName(lastName)
                     .jobTitle(jobTitle)
+                    .department(dept)
                     .salary(new BigDecimal("75000.00"))
                     .hireDate(LocalDate.now())
                     .status(EmployeeStatus.ACTIVE)

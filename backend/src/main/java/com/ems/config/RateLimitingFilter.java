@@ -23,7 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RateLimitingFilter implements Filter {
 
     private final Map<String, TokenBucket> buckets = new ConcurrentHashMap<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
     // Rates config: 100 max capacity, 10 tokens refilled per second
     private static final long BUCKET_CAPACITY = 100;
