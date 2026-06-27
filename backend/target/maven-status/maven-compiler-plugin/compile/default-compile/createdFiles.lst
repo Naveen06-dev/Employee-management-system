@@ -115,6 +115,7 @@ com\ems\exception\DuplicateResourceException.class
 com\ems\modules\auth\controller\AuthController.class
 com\ems\modules\employee\controller\DepartmentController.class
 com\ems\modules\recruitment\model\ApplicationStatus.class
+com\ems\config\DataInitializer.class
 com\ems\modules\auth\model\RefreshToken.class
 com\ems\modules\employee\dto\LeaveDto.class
 com\ems\modules\auth\model\Role$RoleBuilder.class

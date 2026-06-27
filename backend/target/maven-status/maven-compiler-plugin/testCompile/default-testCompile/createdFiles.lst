@@ -1,2 +1,3 @@
 com\ems\modules\employee\service\EmployeeServiceTests.class
+com\ems\modules\recruitment\service\RecruitmentServiceTests.class
 com\ems\modules\auth\service\AuthServiceTests.class
